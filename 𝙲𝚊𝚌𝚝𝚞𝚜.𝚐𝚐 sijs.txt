@@ -377,6 +377,8 @@ local RocketTP = false
 getgenv().Desync = false
 getgenv().AntiLockType = "Behind"
 getgenv().Direction = Vector3.new(0, 0, -1)
+getgenv().Sentinel.AntiLock = true
+
 -- ✅ Anti-Lock Resolver Confuser (No Gameplay Impact)
 task.spawn(function()
     while getgenv().Sentinel and getgenv().Sentinel.AntiLock do
