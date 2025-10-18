@@ -1069,9 +1069,6 @@ end)
     Menu.CheckBox("Main", "Target Aim", "Highlight", getgenv().Sentinel.Highlight or true, function(a)
         Highlight = a
     end)
-    Menu.CheckBox("Main", "Target Aim", "Anti-Lock", getgenv().Sentinel.AntiLock or true, function(a)
-    getgenv().Sentinel.AntiLock = a
-    end)
 
     Menu.CheckBox("Main", "Target Aim", "Auto Air", getgenv().Sentinel.AutoAir, function(a)
         getgenv().Sentinel.AutoAir = a
