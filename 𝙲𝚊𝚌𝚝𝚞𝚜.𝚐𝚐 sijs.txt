@@ -378,32 +378,40 @@ getgenv().Desync = false
 getgenv().AntiLockType = "Behind"
 getgenv().Direction = Vector3.new(0, 0, -1)
 
--- ✅ Anti-Lock Resolver Confuser (No Gameplay Impact)
-task.spawn(function()
-    while getgenv().Sentinel and getgenv().Sentinel.AntiLock do
-        getgenv().Sentinel.HorizontalPrediction = math.random(134, 168) / 1000
-        getgenv().Sentinel.VerticalPrediction = math.random(134, 168) / 1000
-        getgenv().Sentinel.jumpoffset = math.random(50, 90) / 1000
+-- ✅ Anti-Lock Resolver Confuser
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
 
-        local lp = game.Players.LocalPlayer
-        local hum = lp.Character and lp.Character:FindFirstChild("Humanoid")
-        if hum and hum.MoveDirection.Magnitude > 0 then
-            getgenv().Sentinel.SelectedPart = "HumanoidRootPart"
-        else
-            getgenv().Sentinel.SelectedPart = "Head"
+RunService.Heartbeat:Connect(function()
+    if getgenv().Sentinel and getgenv().Sentinel.AntiLock then
+        local char = lp.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChild("Humanoid")
+        if hrp and hum then
+            local originalVelocity = hrp.Velocity
+
+            -- 🔁 Smart spoof direction based on movement state
+            local state = hum:GetState()
+            local spoofVector
+            if state == Enum.HumanoidStateType.Jumping then
+                spoofVector = Vector3.new(math.random(-3, 3), 5, math.random(-3, 3))
+            elseif state == Enum.HumanoidStateType.Freefall then
+                spoofVector = Vector3.new(math.random(-3, 3), -5, math.random(-3, 3))
+            elseif state == Enum.HumanoidStateType.Running then
+                spoofVector = Vector3.new(math.random(-4, 4), 0, math.random(-4, 4))
+            else
+                spoofVector = Vector3.new(math.random(-2, 2), math.random(-1, 1), math.random(-2, 2))
+            end
+
+            -- 🕒 Spoof for one frame only
+            hrp.Velocity = spoofVector * 2^12
+            RunService.RenderStepped:Wait()
+            hrp.Velocity = originalVelocity
         end
-
-        getgenv().Sentinel.NetworkPreviousTick = tick() + math.random(-0.01, 0.01)
-
-        getgenv().Sentinel.OriginalVelocity = {
-            X = math.random(-5, 5),
-            Y = math.random(-2, 2),
-            Z = math.random(-5, 5)
-        }
-
-        task.wait(math.random(0.05, 0.1))
     end
 end)
+
 
 
 
